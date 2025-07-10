@@ -1,5 +1,4 @@
 ---
-title: web calendar note
 ---
 
 # Sinatra Web Calendar
