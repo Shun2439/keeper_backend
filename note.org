@@ -1,0 +1,37 @@
+#+TITLE: web calendar note
+#+STARTUP: content
+#+EXPORT_FILE_NAME: README
+
+* Sinatra Web Calendar
+
+** TODO COMMENT note
+DEADLINE: <2025-07-17 Thu 16:00>
+- State "TODO"       from              [2025-07-10 Thu 15:13] \\
+  Begin to implement from p.116
+
+#+begin_src sql :tangle dbinit.sq3
+  CREATE TABLE days(
+	 id INTEGER PRIMARY KEY AUTOINCREMENT,
+	 day_date TEXT NOT NULL UNIQUE,
+	 name TEXT NOT NULL,
+	 description TEXT
+  );
+#+end_src
+
+pandoc入れた
+
+** Requirements
+
+- SQLite
+  
+** Setup
+
+#+begin_src shell
+  bundle install
+#+end_src
+
+** Run
+
+#+begin_src shell
+  bundle exec ruby webcal.rb
+#+end_src

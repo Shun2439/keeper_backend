@@ -1,0 +1,6 @@
+create table days(
+       id INTEGER PRIMARY KEY AUTOINCREMENT,
+       day_date TEXT NOT NULL UNIQUE,
+       name TEXT NOT NULL,
+       description TEXT
+);
