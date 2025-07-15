@@ -1,7 +1,3 @@
----
-title: Sinatra Web Calendar
----
-
 # Sinatra Web Calendar
 
 ## Requirements

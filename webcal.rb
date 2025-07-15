@@ -47,11 +47,11 @@ get '/:y/:m' do
         @t = @t + "<td></td>"
       else
         if d <= l
-          if(@year == Time.now.year && @month == Time.now.month && d == Time.now.day) 
+          if(@year == Time.now.year && @month == Time.now.month && d == Time.now.day) # Today
             @t = @t + "<td align=\"right\"><font color=\"green\">#{d}</font></td>"
-          elsif (h + d ) % 7 == 0
+          elsif (h + d ) % 7 == 0 # Saturday
             @t = @t + "<td align=\"right\"><font color=\"blue\">#{d}</font></td>"
-          elsif (h + d ) % 7 == 1
+          elsif (h + d ) % 7 == 1 # Sunday
             @t = @t + "<td align=\"right\"><font color=\"red\">#{d}</font></td>"
           else
             @t = @t + "<td align=\"right\">#{d}</td>"
@@ -73,37 +73,37 @@ get '/:y/:m' do
   erb :moncal
 end
 
-  def isLeapYear(y)
-    return (y % 4 == 0 && (y % 100 != 0 || y % 400 == 0)) ? false : true
-  end
+def isLeapYear(y)
+  return (y % 4 == 0 && (y % 100 != 0 || y % 400 == 0)) ? false : true
+end
 
-  def getLastDay(y, m)
-    return isLeapYear(y) ?
-	     case m
-	     when 2
-	       28
-	     when 4, 6, 9, 11
-	       30
-	     else
-	       31
-	     end
-    :
-      case m
-      when 2, 4, 6, 9, 11
-	30
-      else
-	31
-      end
-  end
-
-  def zeller(y, m, d)
+def getLastDay(y, m)
+  return isLeapYear(y) ?
     case m
-	when 1
-	  m = 13
-	  y -= 1
-	when 2
-	  m = 14
-	  y -= 1
+      when 2
+        28
+      when 4, 6, 9, 11
+        30
+    else
+      31
     end
-    return (y + (y/4).floor - (y/100).floor + (y/400).floor + ((13 * m + 8)/5).floor + d) % 7
+   :
+    case m
+      when 2, 4, 6, 9, 11
+        30
+     else
+        31
+    end
+end
+
+def zeller(y, m, d)
+  case m
+    when 1
+      m = 13
+      y -= 1
+    when 2
+      m = 14
+      y -= 1
   end
+  return (y + (y/4).floor - (y/100).floor + (y/400).floor + ((13 * m + 8)/5).floor + d) % 7
+end
