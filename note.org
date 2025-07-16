@@ -20,6 +20,10 @@ DEADLINE: <2025-07-17 Thu 16:00>
 
 pandoc入れた
 
+<2025-07-17 Thu 07:12>
+
+- [[https://qiita.com/izumin5210/items/cd2f9f48fbe1fdcaf628][【Sinatra】オートリロードしてほしい]]
+
 ** Requirements
 
 - SQLite

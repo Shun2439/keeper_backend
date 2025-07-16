@@ -4,3 +4,6 @@ create table days(
        name TEXT NOT NULL,
        description TEXT
 );
+
+insert into days values (1, '20060922', 'My birthday', 'Happy birthday!');
+insert into days values (1, '****0707', 'tanabata', 'Make a short piece of paper');

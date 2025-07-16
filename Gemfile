@@ -7,3 +7,8 @@ gem "webrick"
 gem "rackup"
 gem "puma"
 gem "nio4r"
+
+gem "activerecord"
+gem "sqlite3"
+
+gem 'sinatra-contrib'

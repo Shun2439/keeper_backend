@@ -1,6 +1,19 @@
-require 'sinatra'
+# coding: utf-8
 
-set :environment, :production
+require 'sinatra'
+require 'active_record'
+
+require 'sinatra/reloader' if development?
+
+# set :environment, :production
+set :environment, :development
+
+ActiveRecord::Base.configurations = YAML.load_file('database.yml')
+ActiveRecord::Base.establish_connection :development
+
+class Daydata < ActiveRecord::Base
+  self.table_name = 'days'
+end
 
 get '/' do
   today = Time.now
@@ -10,6 +23,8 @@ get '/' do
 end
 
 get '/:y/:m' do
+  days = Daydata.all
+
   @year = params[:y].to_i
   @month = params[:m].to_i
 
@@ -33,42 +48,60 @@ get '/:y/:m' do
   end
 
   @t = "<table border>"
-  @t = @t + "<tr><th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th>"
-  @t = @t + "<th>Thu</th><th>Fri</th><th>Sat</th></tr>"
+  @t += "<tr><th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th>"
+  @t += "<th>Thu</th><th>Fri</th><th>Sat</th></tr>"
 
   l = getLastDay(@year, @month)
   h = zeller(@year, @month, 1)
 
   d = 1
   6.times do |p|
-    @t = @t + "<tr>"
+    @t += "<tr>"
     7.times do |q|
       if p == 0 && q < h
-        @t = @t + "<td></td>"
+        @t += "<td></td>"
       else
         if d <= l
           if(@year == Time.now.year && @month == Time.now.month && d == Time.now.day) # Today
-            @t = @t + "<td align=\"right\"><font color=\"green\">#{d}</font></td>"
+            @t += "<td align=\"right\"><font color=\"green\">#{d}</font></td>"
           elsif (h + d ) % 7 == 0 # Saturday
-            @t = @t + "<td align=\"right\"><font color=\"blue\">#{d}</font></td>"
+            @t += "<td align=\"right\"><font color=\"blue\">#{d}</font></td>"
           elsif (h + d ) % 7 == 1 # Sunday
-            @t = @t + "<td align=\"right\"><font color=\"red\">#{d}</font></td>"
+            @t += "<td align=\"right\"><font color=\"red\">#{d}</font></td>"
           else
-            @t = @t + "<td align=\"right\">#{d}</td>"
+            @t += "<td align=\"right\">#{d}</td>"
           end
           d += 1
         else
-          @t = @t + "<td></td>"
+          @t += "<td></td>"
         end
       end
     end
-    @t = @t + "</tr>"
+    @t += "</tr>"
+
     if d > l
       break
     end
   end
 
-  @t = @t + "</table>"
+  @t += "</table>"
+
+  @h = ""
+  days.each do |a|
+    @h += "<tr>"
+    @h += "<td>#{a.id}</td>"
+    @h += "<td>#{a.day_date}</td>"
+    @h += "<td>#{a.name}</td>"
+    @h += "<td>#{a.description}</td>"
+
+    # @h += "<form method=\"post\" action=\"/del\">"
+    # @h += "<td><input type=\"submit\" value=\"Delete\" /></td>"
+    # @h += "<input type=\"hidden\" name=\"id\" value=\"#{a.id}\" />"
+    # @h += "<input type=\"hidden\" name=\"_method\" value=\"delete\" />"
+    # @h += "</form>"
+
+    @h += "</tr>\n"
+  end
 
   erb :moncal
 end
