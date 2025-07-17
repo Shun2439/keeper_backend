@@ -63,14 +63,22 @@ get '/:y/:m' do
       else
         if d <= l
           if(@year == Time.now.year && @month == Time.now.month && d == Time.now.day) # Today
-            @t += "<td align=\"right\"><font color=\"green\">#{d}</font></td>"
+            @t += "<td align=\"right\"><font color=\"green\">#{d}</font>"
           elsif (h + d ) % 7 == 0 # Saturday
-            @t += "<td align=\"right\"><font color=\"blue\">#{d}</font></td>"
+            @t += "<td align=\"right\"><font color=\"blue\">#{d}</font>"
           elsif (h + d ) % 7 == 1 # Sunday
-            @t += "<td align=\"right\"><font color=\"red\">#{d}</font></td>"
+            @t += "<td align=\"right\"><font color=\"red\">#{d}</font>"
           else
-            @t += "<td align=\"right\">#{d}</td>"
+            @t += "<td align=\"right\">#{d}"
           end
+
+          anniversary_on_day = @anniversaries.any? { |a| a.date.end_with?("#{'%02d' % @month}#{'%02d' % d}") }
+          if anniversary_on_day
+            @t += "<font color=\"purple\">*</font>"
+          else
+             @t += ""
+          end
+
           d += 1
         else
           @t += "<td></td>"
