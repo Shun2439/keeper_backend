@@ -11,7 +11,7 @@ set :environment, :development
 ActiveRecord::Base.configurations = YAML.load_file('database.yml')
 ActiveRecord::Base.establish_connection :development
 
-class Daydata < ActiveRecord::Base
+class Anniversaries < ActiveRecord::Base
   self.table_name = 'anniversaries'
 end
 
@@ -23,7 +23,7 @@ get '/' do
 end
 
 get '/:y/:m' do
-  @anniversaries = Daydata.all
+  @anniversaries = Anniversaries.all
 
   @year = params[:y].to_i
   @month = params[:m].to_i
@@ -74,13 +74,13 @@ get '/:y/:m' do
 
           anniversaries_on_day = @anniversaries.select { |a| a.date.end_with?("#{'%02d' % @month}#{'%02d' % d}") }
           if anniversaries_on_day.any?
-            @t += "<span style=\"position: relative;\"><font color=\"purple\">*</font>"
+            @t += "<span style=\"position: relative;\"><font color=\"purple\">*</font>" # Highlight with a star
             @t += "<div style=\"position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); visibility: hidden; background-color: white; border: 1px solid black; padding: 5px; z-index: 1;\">"
             anniversaries_on_day.each do |a|
               @t += "#{a.name}: #{a.description}<br>"
             end
             @t += "</div></span>"
-            @t += "<script>document.currentScript.previousSibling.addEventListener('mouseover', function() { this.querySelector('div').style.visibility = 'visible'; }); document.currentScript.previousSibling.addEventListener('mouseout', function() { this.querySelector('div').style.visibility = 'hidden'; });</script>"
+            @t += "<script>document.currentScript.previousSibling.addEventListener('mouseover', function() { this.querySelector('div').style.visibility = 'visible'; }); document.currentScript.previousSibling.addEventListener('mouseout', function() { this.querySelector('div').style.visibility = 'hidden'; });</script>" # Create a pop-up on mouse over
           end
 
           d += 1
@@ -116,6 +116,17 @@ get '/:y/:m' do
   end
 
   erb :moncal
+end
+
+post '/new' do
+  b = Anniversaries.new
+  b.id = params[:id]
+  b.date = params[:date]
+  b.name = params[:name]
+  b.description = params[:description]
+  b.save
+
+  redirect "/#{params[:year]}/#{params[:month]}"
 end
 
 def isLeapYear(y)
