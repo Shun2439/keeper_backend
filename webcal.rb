@@ -119,6 +119,29 @@ get '/:y/:m' do
   erb :moncal
 end
 
+# get '/kanri' do
+#   @anniversaries = Anniversaries.all
+
+#   @h = ""
+#   @anniversaries.each do |a|
+#     @h += "<tr>"
+#     @h += "<td>#{a.id}</td>"
+#     @h += "<td>#{a.date}</td>"
+#     @h += "<td>#{a.name}</td>"
+#     @h += "<td>#{a.description}</td>"
+
+#     @h += "<form method=\"post\" action=\"/del\">"
+#     @h += "<td><input type=\"submit\" value=\"Delete\" /></td>"
+#     @h += "<input type=\"hidden\" name=\"id\" value=\"#{a.id}\" />"
+#     @h += "<input type=\"hidden\" name=\"_method\" value=\"delete\" />"
+#     @h += "</form>"
+
+#     @h += "</tr>\n"
+#   end
+
+#   erb :kanri
+# end
+
 post '/new' do
   b = Anniversaries.new
   b.id = params[:id]
@@ -126,6 +149,13 @@ post '/new' do
   b.name = params[:name]
   b.description = params[:description]
   b.save
+
+  redirect "/#{params[:year]}/#{params[:month]}"
+end
+
+delete '/del' do
+  b = Anniversaries.find(params[:id])
+  b.destroy
 
   redirect "/#{params[:year]}/#{params[:month]}"
 end

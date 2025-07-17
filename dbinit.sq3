@@ -5,5 +5,5 @@ create table anniversaries(
        description TEXT
 );
 
-insert into anniversaries values (1, '20060922', 'My birthday', 'Happy birthday!');
+insert into anniversaries values (1, '20000922', 'birthday', 'Happy birthday!');
 insert into anniversaries values (2, '****0707', 'tanabata', 'Make a short piece of paper');
