@@ -12,7 +12,7 @@ ActiveRecord::Base.configurations = YAML.load_file('database.yml')
 ActiveRecord::Base.establish_connection :development
 
 class Daydata < ActiveRecord::Base
-  self.table_name = 'days'
+  self.table_name = 'anniversaries'
 end
 
 get '/' do
@@ -23,7 +23,7 @@ get '/' do
 end
 
 get '/:y/:m' do
-  days = Daydata.all
+  @anniversaries = Daydata.all
 
   @year = params[:y].to_i
   @month = params[:m].to_i
@@ -87,10 +87,10 @@ get '/:y/:m' do
   @t += "</table>"
 
   @h = ""
-  days.each do |a|
+  @anniversaries.each do |a|
     @h += "<tr>"
     @h += "<td>#{a.id}</td>"
-    @h += "<td>#{a.day_date}</td>"
+    @h += "<td>#{a.date}</td>"
     @h += "<td>#{a.name}</td>"
     @h += "<td>#{a.description}</td>"
 
