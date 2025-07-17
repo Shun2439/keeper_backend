@@ -54,6 +54,8 @@ get '/:y/:m' do
   l = getLastDay(@year, @month)
   h = zeller(@year, @month, 1)
 
+  make_monday_red = false
+
   d = 1
   6.times do |p|
     @t += "<tr>"
@@ -62,26 +64,31 @@ get '/:y/:m' do
         @t += "<td></td>"
       else
         if d <= l
-          if(@year == Time.now.year && @month == Time.now.month && d == Time.now.day) # Today
-            @t += "<td align=\"right\"><font color=\"green\">#{d}</font>"
-          elsif (h + d ) % 7 == 0 # Saturday
-            @t += "<td align=\"right\"><font color=\"blue\">#{d}</font>"
-          elsif (h + d ) % 7 == 1 # Sunday
-            @t += "<td align=\"right\"><font color=\"red\">#{d}</font>"
-          else
-            @t += "<td align=\"right\">#{d}"
-          end
-
-          # Get from database
+          # search anniversary from database
           anniversaries_on_day = @anniversaries.select { |a| a.date.end_with?("#{'%02d' % @month}#{'%02d' % d}") }
-          if anniversaries_on_day.any?
-            @t += "<span style=\"position: relative;\"><font color=\"purple\">*</font>" # Highlight with a star
+          if anniversaries_on_day.any? # anniversary day
+            # Sunday check
+            if (h + d) % 7 == 1
+              make_monday_red = true
+            end
+            @t += "<td align=\"right\"><span style=\"position: relative;\"><font color=\"green\">#{d}</font>"
             @t += "<div style=\"position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); visibility: hidden; background-color: white; border: 1px solid black; padding: 5px; z-index: 1;\">"
             anniversaries_on_day.each do |a|
               @t += "#{a.name}: #{a.description}<br>"
             end
             @t += "</div></span>"
             @t += "<script>document.currentScript.previousSibling.addEventListener('mouseover', function() { this.querySelector('div').style.visibility = 'visible'; }); document.currentScript.previousSibling.addEventListener('mouseout', function() { this.querySelector('div').style.visibility = 'hidden'; });</script>" # Create a pop-up on mouse over
+          elsif(@year == Time.now.year && @month == Time.now.month && d == Time.now.day) # Today
+            @t += "<td align=\"right\"><font color=\"whitegreen\">#{d}</font>"
+          elsif (h + d ) % 7 == 0 # Saturday
+            @t += "<td align=\"right\"><font color=\"blue\">#{d}</font>"
+          elsif (h + d ) % 7 == 1 # Sunday
+            @t += "<td align=\"right\"><font color=\"red\">#{d}</font>"
+          elsif make_monday_red && (h + d) % 7 == 2 # Monday
+            make_monday_red = false
+            @t += "<td align=\"right\"><font color=\"red\">#{d}</font>"
+          else
+            @t += "<td align=\"right\">#{d}"
           end
 
           d += 1
