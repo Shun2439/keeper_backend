@@ -72,6 +72,7 @@ get '/:y/:m' do
             @t += "<td align=\"right\">#{d}"
           end
 
+          # Get from database
           anniversaries_on_day = @anniversaries.select { |a| a.date.end_with?("#{'%02d' % @month}#{'%02d' % d}") }
           if anniversaries_on_day.any?
             @t += "<span style=\"position: relative;\"><font color=\"purple\">*</font>" # Highlight with a star
@@ -106,11 +107,11 @@ get '/:y/:m' do
     @h += "<td>#{a.name}</td>"
     @h += "<td>#{a.description}</td>"
 
-    # @h += "<form method=\"post\" action=\"/del\">"
-    # @h += "<td><input type=\"submit\" value=\"Delete\" /></td>"
-    # @h += "<input type=\"hidden\" name=\"id\" value=\"#{a.id}\" />"
-    # @h += "<input type=\"hidden\" name=\"_method\" value=\"delete\" />"
-    # @h += "</form>"
+    @h += "<form method=\"post\" action=\"/del\">"
+    @h += "<td><input type=\"submit\" value=\"Delete\" /></td>"
+    @h += "<input type=\"hidden\" name=\"id\" value=\"#{a.id}\" />"
+    @h += "<input type=\"hidden\" name=\"_method\" value=\"delete\" />"
+    @h += "</form>"
 
     @h += "</tr>\n"
   end
