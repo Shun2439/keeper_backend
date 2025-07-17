@@ -72,11 +72,15 @@ get '/:y/:m' do
             @t += "<td align=\"right\">#{d}"
           end
 
-          anniversary_on_day = @anniversaries.any? { |a| a.date.end_with?("#{'%02d' % @month}#{'%02d' % d}") }
-          if anniversary_on_day
-            @t += "<font color=\"purple\">*</font>"
-          else
-             @t += ""
+          anniversaries_on_day = @anniversaries.select { |a| a.date.end_with?("#{'%02d' % @month}#{'%02d' % d}") }
+          if anniversaries_on_day.any?
+            @t += "<span style=\"position: relative;\"><font color=\"purple\">*</font>"
+            @t += "<div style=\"position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); visibility: hidden; background-color: white; border: 1px solid black; padding: 5px; z-index: 1;\">"
+            anniversaries_on_day.each do |a|
+              @t += "#{a.name}: #{a.description}<br>"
+            end
+            @t += "</div></span>"
+            @t += "<script>document.currentScript.previousSibling.addEventListener('mouseover', function() { this.querySelector('div').style.visibility = 'visible'; }); document.currentScript.previousSibling.addEventListener('mouseout', function() { this.querySelector('div').style.visibility = 'hidden'; });</script>"
           end
 
           d += 1
