@@ -1,9 +1,12 @@
 create table anniversaries(
        id INTEGER PRIMARY KEY AUTOINCREMENT,
-       date TEXT NOT NULL UNIQUE,
-       name TEXT NOT NULL,
-       description TEXT
+       date TEXT UNIQUE,
+       week_of_month INTEGER,
+       day_of_week INTEGER,
+       name VARCHAR(30) NOT NULL,
+       description VARCHAR(30)
 );
 
-insert into anniversaries values (1, '20250717', 'today test', 'test!');
-insert into anniversaries values (2, '20250720', 'sunday test', 'test!');
+insert into anniversaries values (1, '    0717', '', '', 'today test', 'test!');
+insert into anniversaries values (2, '    0713', '', '', 'sunday test', 'test!');
+insert into anniversaries values (3, '    07  ', '3', '1', '海の日', '海の日');

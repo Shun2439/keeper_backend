@@ -21,6 +21,8 @@ get '/kanri' do
     @h += "<tr>"
     @h += "<td>#{a.id}</td>"
     @h += "<td>#{a.date}</td>"
+    @h += "<td>#{a.week_of_month}</td>"
+    @h += "<td>#{a.day_of_week}</td>"
     @h += "<td>#{a.name}</td>"
     @h += "<td>#{a.description}</td>"
 
@@ -89,7 +91,7 @@ get '/:y/:m' do
       else
         if d <= l
           # search anniversary from database
-          anniversaries_on_day = @anniversaries.select { |a| a.date.end_with?("#{'%02d' % @month}#{'%02d' % d}") }
+          anniversaries_on_day = @anniversaries.select { |a| a.date.end_with?("#{'%02d' % @month}#{'%02d' % d}") || (a.date.end_with?("#{'%02d' % @month}  ") && a.week_of_month == (d / 7) && a.day_of_week == (d % 7 + 1)) }
           if anniversaries_on_day.any? # anniversary day
             # Sunday check
             if (h + d) % 7 == 1
