@@ -3,16 +3,37 @@
 require 'sinatra'
 require 'active_record'
 
-require 'sinatra/reloader' if development?
-
-# set :environment, :production
-set :environment, :development
+set :environment, :production
 
 ActiveRecord::Base.configurations = YAML.load_file('database.yml')
 ActiveRecord::Base.establish_connection :development
 
 class Anniversaries < ActiveRecord::Base
   self.table_name = 'anniversaries'
+end
+
+get '/kanri' do
+  @anniversaries = Anniversaries.all
+
+  # Create table
+  @h = ""
+  @anniversaries.each do |a|
+    @h += "<tr>"
+    @h += "<td>#{a.id}</td>"
+    @h += "<td>#{a.date}</td>"
+    @h += "<td>#{a.name}</td>"
+    @h += "<td>#{a.description}</td>"
+
+    @h += "<form method=\"post\" action=\"/del\">"
+    @h += "<td><input type=\"submit\" value=\"Delete\" /></td>"
+    @h += "<input type=\"hidden\" name=\"id\" value=\"#{a.id}\" />"
+    @h += "<input type=\"hidden\" name=\"_method\" value=\"delete\" />"
+    @h += "</form>"
+
+    @h += "</tr>\n"
+  end
+
+  erb :kanri
 end
 
 get '/' do
@@ -28,11 +49,13 @@ get '/:y/:m' do
   @year = params[:y].to_i
   @month = params[:m].to_i
 
-  if @month < 1 || @month > 12 || @year <= 0 then 
+  # Check year and month
+  if @month < 1 || @month > 12 || @year <= 0 then
     @year = Time.now.year
     @month = Time.now.month
   end
 
+  # Previous and next month
   @y1 = @year
   @m1 = @month - 1
   if @m1 == 0
@@ -47,6 +70,7 @@ get '/:y/:m' do
     @y2 += 1
   end
 
+  # Create calendar table
   @t = "<table border>"
   @t += "<tr><th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th>"
   @t += "<th>Thu</th><th>Fri</th><th>Sat</th></tr>"
@@ -71,7 +95,8 @@ get '/:y/:m' do
             if (h + d) % 7 == 1
               make_monday_red = true
             end
-            @t += "<td align=\"right\"><span style=\"position: relative;\"><font color=\"green\">#{d}</font>"
+            # Create a pop-up for anniversaries
+            @t += "<td align=\"right\"><span style=\"position: relative;\"><font color=\"whiteblue\">#{d}</font>"
             @t += "<div style=\"position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); visibility: hidden; background-color: white; border: 1px solid black; padding: 5px; z-index: 1;\">"
             anniversaries_on_day.each do |a|
               @t += "#{a.name}: #{a.description}<br>"
@@ -106,48 +131,8 @@ get '/:y/:m' do
 
   @t += "</table>"
 
-  @h = ""
-  @anniversaries.each do |a|
-    @h += "<tr>"
-    @h += "<td>#{a.id}</td>"
-    @h += "<td>#{a.date}</td>"
-    @h += "<td>#{a.name}</td>"
-    @h += "<td>#{a.description}</td>"
-
-    @h += "<form method=\"post\" action=\"/del\">"
-    @h += "<td><input type=\"submit\" value=\"Delete\" /></td>"
-    @h += "<input type=\"hidden\" name=\"id\" value=\"#{a.id}\" />"
-    @h += "<input type=\"hidden\" name=\"_method\" value=\"delete\" />"
-    @h += "</form>"
-
-    @h += "</tr>\n"
-  end
-
   erb :moncal
 end
-
-# get '/kanri' do
-#   @anniversaries = Anniversaries.all
-
-#   @h = ""
-#   @anniversaries.each do |a|
-#     @h += "<tr>"
-#     @h += "<td>#{a.id}</td>"
-#     @h += "<td>#{a.date}</td>"
-#     @h += "<td>#{a.name}</td>"
-#     @h += "<td>#{a.description}</td>"
-
-#     @h += "<form method=\"post\" action=\"/del\">"
-#     @h += "<td><input type=\"submit\" value=\"Delete\" /></td>"
-#     @h += "<input type=\"hidden\" name=\"id\" value=\"#{a.id}\" />"
-#     @h += "<input type=\"hidden\" name=\"_method\" value=\"delete\" />"
-#     @h += "</form>"
-
-#     @h += "</tr>\n"
-#   end
-
-#   erb :kanri
-# end
 
 post '/new' do
   b = Anniversaries.new
@@ -181,11 +166,11 @@ def getLastDay(y, m)
     else
       31
     end
-   :
+  :
     case m
       when 2, 4, 6, 9, 11
         30
-     else
+      else
         31
     end
 end

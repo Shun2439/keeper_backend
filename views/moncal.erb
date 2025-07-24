@@ -6,25 +6,3 @@
 <a href="/<%= @y2 %>/<%= @m2 %>">来月</a>
 <a href="/<%= @year + 1 %>/<%= @month %>">翌年</a>
 <%= @t %>
-
-<p>
-
-<table border>
-    <tr>
-        <th>ID</th>
-        <th>Date</th>
-        <th>Name</th>
-        <th>Description</th>
-    </tr>
-
-    <%= @h %>
-    <form method="post" action="/new">
-        <tr>
-            <td><input type="text" name="id" /></td>
-            <td><input type="text" name="date" /></td>
-            <td><input type="text" name="name" /></td>
-            <td><input type="text" name="description" /></td>
-            <td><input type="submit" value="Add" /></td>
-        </tr>
-    </form>
-</table>
