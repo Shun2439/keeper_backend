@@ -28,3 +28,23 @@ bundle install
 ``` shell
 bundle exec ruby webcal.rb
 ```
+
+
+## Appendix
+
+### On NixOS
+
+Setup: 
+
+``` shell
+nix-shell
+bundle install
+```
+
+Execute:
+
+``` shell
+bundle exec ruby webcal.rb
+```
+
+1. <https://wiki.nixos.org/wiki/Packaging/Ruby>
