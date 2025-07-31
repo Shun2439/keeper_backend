@@ -1,6 +1,6 @@
 create table anniversaries(
        id INTEGER PRIMARY KEY AUTOINCREMENT,
-       date TEXT UNIQUE,
+       date TEXT,
        week_of_month INTEGER,
        day_of_week INTEGER,
        name VARCHAR(30) NOT NULL,

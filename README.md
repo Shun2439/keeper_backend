@@ -28,3 +28,6 @@ bundle install
 ``` shell
 bundle exec ruby webcal.rb
 ```
+
+## note
+

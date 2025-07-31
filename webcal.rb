@@ -20,7 +20,7 @@ get '/kanri' do
   @anniversaries.each do |a|
     @h += "<tr>"
     @h += "<td>#{a.id}</td>"
-    @h += "<td>#{a.date}</td>"
+    @h += "<td style=\"white-space: pre-wrap;\">#{a.date}</td>"
     @h += "<td>#{a.week_of_month}</td>"
     @h += "<td>#{a.day_of_week}</td>"
     @h += "<td>#{a.name}</td>"
@@ -91,7 +91,14 @@ get '/:y/:m' do
       else
         if d <= l
           # search anniversary from database
-          anniversaries_on_day = @anniversaries.select { |a| a.date.end_with?("#{'%02d' % @month}#{'%02d' % d}") || (a.date.end_with?("#{'%02d' % @month}  ") && a.week_of_month == (d / 7) && a.day_of_week == (d % 7 + 1)) }
+          anniversaries_on_day = @anniversaries.select do |a|
+            if a.week_of_month.nil? || a.day_of_week.nil?
+              a.date.end_with?("#{'%02d' % @month}#{'%02d' % d}")
+            else
+              a.date[4..5].to_i == @month && a.week_of_month == (d/7) && a.day_of_week == (d % 7 + 1)
+            end
+          end
+
           if anniversaries_on_day.any? # anniversary day
             # Sunday check
             if (h + d) % 7 == 1
@@ -137,9 +144,30 @@ get '/:y/:m' do
 end
 
 post '/new' do
+
+  # 1. id check
+  # プライマリーキーのIDを指定しない場合は最大値+1を設定
+  if params[:id].nil? || can_convert_to_integer_with_exception(params[:id]) != true
+    params[:id] = Anniversaries.maximum(:id).to_i + 1
+  end
+
+  # 2. 数値のチェック
+  if check_month(params[:date][4..5].to_i) && params[:week_of_month].empty? == false && params[:day_of_week].empty? == false
+  elsif check_format(params[:date])
+  else
+    return "入力が不正です。固定月日はYYYYMMDDの形式で、固定曜日はYYYYMMDDかつWeek of monthに週番号、Day of weekに曜日番号を入れてください。"
+  end
+
+  # 文字列から除外
+  if params[:name].match?(/[<>"']/) || params[:description].match?(/[<>"']/)
+    return "不正な文字がふくまれています。"
+  end
+
   b = Anniversaries.new
   b.id = params[:id]
   b.date = params[:date]
+  b.week_of_month = params[:week_of_month]
+  b.day_of_week = params[:day_of_week]
   b.name = params[:name]
   b.description = params[:description]
   b.save
@@ -187,4 +215,53 @@ def zeller(y, m, d)
       y -= 1
   end
   return (y + (y/4).floor - (y/100).floor + (y/400).floor + ((13 * m + 8)/5).floor + d) % 7
+end
+
+def can_convert_to_integer_with_exception(str)
+  begin
+    Integer(str)
+    true
+  rescue ArgumentError
+    false
+  end
+end
+
+def check_date(s)
+  year = s[0..3].to_i
+  month = s[4..5].to_i
+  day = s[6..7].to_i
+
+  # puts year month day
+  return false if year <= 0 || month < 1 || month > 12 || day < 1 || day > getLastDay(year, month)
+
+  # check leap year
+  if month == 2 && day == 29 && !isLeapYear(year)
+    return false
+  end
+
+  return true
+end
+
+# 月が正しいか判定
+def check_month(month)
+  if month < 1 || month > 12
+    return false
+  end
+
+  true
+end
+
+# get normal string
+def check_format(s)
+  # 文字列の長さと不正文字のチェック
+  if s.length != 8 || can_convert_to_integer_with_exception(s) == false
+    return false
+  end
+
+  # 指定があっているか確認
+  if check_date(s) == false
+    return false
+  end
+
+  return true
 end
